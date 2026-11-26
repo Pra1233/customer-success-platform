@@ -1,0 +1,28 @@
+# Python / backend
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+.next/
+out/
+npm-debug.log*
+next-env.d.ts
+*.tsbuildinfo
+
+# Env files (never commit real secrets)
+.env
+.env.local
+.env*.local
+
+# Build output
+dist/
+build/
+
+# OS / editor
+.DS_Store
