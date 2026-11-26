@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
+import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { customerService } from "@/services/customerService";
 import type {
   Customer,
@@ -58,33 +59,36 @@ const customersSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    addAsyncStatusCases(builder, fetchCustomers, "Failed to load customers");
+    addAsyncStatusCases(builder, fetchCustomer, "Failed to load customer");
+    addAsyncStatusCases(builder, createCustomer, "Failed to create customer");
+    addAsyncStatusCases(builder, updateCustomer, "Failed to update customer");
+    addAsyncStatusCases(builder, deleteCustomer, "Failed to delete customer");
+
     builder
-      .addCase(fetchCustomers.pending, (state) => {
-        state.status = "loading";
-      })
       .addCase(fetchCustomers.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload.items;
         state.total = action.payload.total;
       })
-      .addCase(fetchCustomers.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Failed to load customers";
-      })
       .addCase(fetchCustomer.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.current = action.payload;
       })
       .addCase(createCustomer.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.items.unshift(action.payload);
         state.total += 1;
       })
       .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.current = action.payload;
         state.items = state.items.map((c) =>
           c.id === action.payload.id ? action.payload : c
         );
       })
       .addCase(deleteCustomer.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.items = state.items.filter((c) => c.id !== action.payload);
         state.total -= 1;
       });

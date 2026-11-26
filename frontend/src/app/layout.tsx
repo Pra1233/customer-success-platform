@@ -6,7 +6,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-const SITE_URL = "http://localhost:3000";
+const SITE_URL = "https://frontend-xi-eight-53.vercel.app";
 const SITE_NAME = "Customer Success Platform";
 const DESCRIPTION =
   "AI-powered customer success platform: manage customers and interactions, generate AI meeting insights, and track business health on one dashboard.";

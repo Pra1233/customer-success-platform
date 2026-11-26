@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
+import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { dashboardService } from "@/services/dashboardService";
 import type { Dashboard } from "@/types/dashboard";
 
@@ -24,18 +25,12 @@ const dashboardSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchDashboard.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchDashboard.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.data = action.payload;
-      })
-      .addCase(fetchDashboard.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Failed to load dashboard";
-      });
+    addAsyncStatusCases(builder, fetchDashboard, "Failed to load dashboard");
+
+    builder.addCase(fetchDashboard.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.data = action.payload;
+    });
   },
 });
 

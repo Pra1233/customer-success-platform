@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
+import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { insightService } from "@/services/insightService";
 import type { Insight } from "@/types/insight";
 
@@ -36,21 +37,18 @@ const insightsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    addAsyncStatusCases(builder, generateInsight, "Failed to generate insight");
+    addAsyncStatusCases(builder, fetchInsights, "Failed to load insights");
+
     builder
-      .addCase(generateInsight.pending, (state) => {
-        state.status = "loading";
-      })
       .addCase(generateInsight.fulfilled, (state, action) => {
         state.status = "succeeded";
         const { interactionId, insight } = action.payload;
         const existing = state.byInteractionId[interactionId] ?? [];
         state.byInteractionId[interactionId] = [insight, ...existing];
       })
-      .addCase(generateInsight.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Failed to generate insight";
-      })
       .addCase(fetchInsights.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.byInteractionId[action.payload.interactionId] = action.payload.insights;
       });
   },
