@@ -97,6 +97,17 @@ docker compose up -d --build
 whichever OpenAI-compatible provider you're using — see `backend/app/core/config.py` for
 every setting and its default.
 
+On every container start (after migrations, before the server starts), `app/seed.py` runs
+and idempotently creates a default `admin` account if one with that email doesn't already
+exist — so a fresh database always has a working login without a manual step:
+
+```
+admin@gmail.com / admin@123
+```
+
+Override via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` env vars, or set either to empty to
+skip seeding entirely (e.g. for a real production deployment).
+
 ## API overview
 
 | Method | Path | Purpose |

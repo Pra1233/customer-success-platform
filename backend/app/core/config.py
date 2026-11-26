@@ -23,6 +23,10 @@ class Settings(BaseSettings):
 
     frontend_origin: str = "http://localhost:3000"
 
+    seed_admin_email: str | None = "admin@gmail.com"
+    seed_admin_password: str | None = "admin@123"
+    seed_admin_name: str = "Admin"
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
 
