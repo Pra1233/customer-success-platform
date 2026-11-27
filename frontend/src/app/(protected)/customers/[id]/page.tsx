@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import type { SVGProps } from "react";
 
 import { Avatar } from "@/components/ui/Avatar";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { InteractionList } from "@/components/interactions/InteractionList";
@@ -131,7 +132,8 @@ export default function CustomerDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
+      <BackLink href="/customers" label="Customers" />
       <div className="flex flex-col gap-6 rounded-md border border-outline-variant bg-surface p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <Avatar name={customer.name} size="lg" />

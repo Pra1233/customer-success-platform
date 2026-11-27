@@ -29,13 +29,6 @@ function ChatIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-function PulseIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" {...props}>
-      <path d="M2.5 10h3l2-5 4 10 2-5h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 function AlertIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" fill="none" {...props}>
@@ -81,11 +74,11 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link href="/interactions" className="self-start sm:self-auto">
-          <Button variant="secondary">View interactions</Button>
+          <Button>View interactions</Button>
         </Link>
       </div>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <button onClick={() => router.push("/customers")} className="cursor-pointer text-left">
           <StatCard
             label="Total customers"
@@ -96,26 +89,7 @@ export default function DashboardPage() {
           />
         </button>
         <button onClick={() => router.push("/interactions")} className="cursor-pointer text-left">
-          <StatCard
-            label="Total interactions"
-            value={data.total_interactions}
-            tone="info"
-            icon={ChatIcon}
-            deltaPct={data.interaction_count_change_pct}
-          />
-        </button>
-        <button onClick={() => router.push("/customers")} className="cursor-pointer text-left">
-          <StatCard
-            label="Active customers"
-            value={data.customers_by_status.active ?? 0}
-            tone="success"
-            icon={PulseIcon}
-            caption={
-              data.total_customers > 0
-                ? `${Math.round(((data.customers_by_status.active ?? 0) / data.total_customers) * 100)}% active`
-                : undefined
-            }
-          />
+          <StatCard label="Total interactions" value={data.total_interactions} tone="info" icon={ChatIcon} />
         </button>
         <button onClick={() => router.push("/interactions")} className="cursor-pointer text-left">
           <StatCard

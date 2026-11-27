@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { BackLink } from "@/components/ui/BackLink";
 import { InsightPanel } from "@/components/interactions/InsightPanel";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchInteraction } from "@/store/slices/interactionsSlice";
@@ -42,7 +43,8 @@ export default function InteractionDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
+      <BackLink href="/interactions" label="Interactions" />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-3">
