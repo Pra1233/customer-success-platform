@@ -28,3 +28,9 @@ class InsightStatus(str, enum.Enum):
     processing = "processing"
     success = "success"
     failed = "failed"
+
+
+class CustomerSortField(str, enum.Enum):
+    last_interaction = "last_interaction"
+    name = "name"
+    company = "company"

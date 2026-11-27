@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.core.enums import InteractionType
+from app.core.enums import InteractionType, Sentiment
 
 
 class InteractionCreate(BaseModel):
@@ -33,3 +33,6 @@ class InteractionOut(BaseModel):
     interaction_date: datetime
     created_at: datetime
     updated_at: datetime
+    customer_name: str | None = None
+    customer_company: str | None = None
+    sentiment: Sentiment | None = None

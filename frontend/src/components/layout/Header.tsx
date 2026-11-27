@@ -16,12 +16,12 @@ export function Header() {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white/80 px-6 backdrop-blur">
+    <header className="flex h-16 shrink-0 items-center justify-between border-b border-outline-variant bg-surface px-6">
       <div className="flex items-center gap-3">
         {user && <Avatar name={user.name} size="sm" />}
         <div className="leading-tight">
-          <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-          <p className="text-xs uppercase tracking-wide text-gray-400">{user?.role}</p>
+          <p className="font-label text-label-lg text-on-surface">{user?.name}</p>
+          <p className="font-label text-label-md uppercase tracking-wide text-secondary-text">{user?.role}</p>
         </div>
       </div>
       <Button variant="ghost" size="sm" onClick={handleLogout}>

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import { ACCESS_TOKEN_KEY, AUTH_USER_KEY } from "@/lib/constants";
+import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { authService } from "@/services/authService";
 import type { LoginPayload, RegisterPayload, User } from "@/types/user";
 import type { ApiErrorBody } from "@/types/common";
@@ -82,29 +83,27 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    const handlePending = (state: AuthState) => {
-      state.status = "loading";
-      state.error = null;
-    };
     const handleFulfilled = (state: AuthState, action: PayloadAction<User>) => {
       state.status = "succeeded";
       state.user = action.payload;
     };
-    const handleRejected = (state: AuthState, action: { payload?: unknown }) => {
-      state.status = "failed";
-      state.error = (action.payload as string) ?? "Request failed";
-    };
+    const getRejectValueMessage = (action: { payload?: unknown }) =>
+      action.payload as string | undefined;
+
+
+    addAsyncStatusCases(builder, login, "Login failed", getRejectValueMessage);
+    addAsyncStatusCases(builder, register, "Registration failed", getRejectValueMessage);
 
     builder
-      .addCase(login.pending, handlePending)
       .addCase(login.fulfilled, handleFulfilled)
-      .addCase(login.rejected, handleRejected)
-      .addCase(register.pending, handlePending)
       .addCase(register.fulfilled, handleFulfilled)
-      .addCase(register.rejected, handleRejected)
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(fetchCurrentUser.fulfilled, handleFulfilled)
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.user = null;
+        state.status = "idle";
       });
   },
 });

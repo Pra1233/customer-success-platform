@@ -18,7 +18,6 @@ export function useRequireAuth() {
       return;
     }
     dispatch(fetchCurrentUser()).unwrap().catch(() => router.replace("/login"));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally mount-only; dispatch/router are referentially stable
   }, []);
 
   return { user, isReady: !!user };

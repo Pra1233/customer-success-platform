@@ -2,7 +2,7 @@ import logging
 import uuid
 from datetime import datetime
 
-from app.core.enums import InteractionType
+from app.core.enums import InteractionType, Sentiment
 from app.core.exceptions import NotFoundError
 from app.core.rbac import owner_scope
 from app.models.interaction import Interaction
@@ -53,6 +53,8 @@ class InteractionService:
         *,
         customer_id: uuid.UUID | None = None,
         type_: InteractionType | None = None,
+        sentiment: Sentiment | None = None,
+        search: str | None = None,
         date_from: datetime | None = None,
         date_to: datetime | None = None,
         offset: int = 0,
@@ -63,13 +65,21 @@ class InteractionService:
             owner_id=scope,
             customer_id=customer_id,
             type_=type_,
+            sentiment=sentiment,
+            search=search,
             date_from=date_from,
             date_to=date_to,
             offset=offset,
             limit=limit,
         )
         total = self._interactions.count(
-            owner_id=scope, customer_id=customer_id, type_=type_, date_from=date_from, date_to=date_to
+            owner_id=scope,
+            customer_id=customer_id,
+            type_=type_,
+            sentiment=sentiment,
+            search=search,
+            date_from=date_from,
+            date_to=date_to,
         )
         return items, total
 

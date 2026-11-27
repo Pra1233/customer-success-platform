@@ -57,8 +57,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-r border-gray-200 bg-white md:flex">
-      <div className="flex h-14 items-center border-b border-gray-100 px-4">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-outline-variant bg-surface md:flex">
+      <div className="flex h-16 items-center border-b border-outline-variant px-5">
         <Logo />
       </div>
       <nav className="flex flex-col gap-1 p-3">
@@ -69,15 +69,15 @@ export function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`group flex h-10 items-center gap-3 rounded px-3 font-label text-label-lg transition-colors duration-150 ease-out ${
                 isActive
-                  ? "bg-brand-50 text-brand-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-primary-container text-primary"
+                  : "text-secondary-text hover:bg-surface-container hover:text-on-surface"
               }`}
             >
               <Icon
-                className={`h-[18px] w-[18px] shrink-0 ${
-                  isActive ? "text-brand-600" : "text-gray-400 group-hover:text-gray-500"
+                className={`h-5 w-5 shrink-0 ${
+                  isActive ? "text-primary" : "text-muted-text group-hover:text-secondary-text"
                 }`}
               />
               {link.label}

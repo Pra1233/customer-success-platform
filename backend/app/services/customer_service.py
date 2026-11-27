@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from app.core.enums import CustomerStatus, UserRole
+from app.core.enums import CustomerSortField, CustomerStatus, UserRole
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.core.rbac import owner_scope
 from app.models.customer import Customer
@@ -38,12 +38,13 @@ class CustomerService:
         *,
         status: CustomerStatus | None = None,
         search: str | None = None,
+        sort: CustomerSortField | None = None,
         offset: int = 0,
         limit: int = 50,
     ) -> tuple[list[Customer], int]:
         scope = owner_scope(current_user)
         items = self._customers.list(
-            owner_id=scope, status=status, search=search, offset=offset, limit=limit
+            owner_id=scope, status=status, search=search, sort=sort, offset=offset, limit=limit
         )
         total = self._customers.count(owner_id=scope, status=status, search=search)
         return items, total

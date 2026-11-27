@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Query, status
 
 from app.api.deps import get_current_user, get_interaction_service
-from app.core.enums import InteractionType
+from app.core.enums import InteractionType, Sentiment
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.interaction import InteractionCreate, InteractionOut, InteractionUpdate
@@ -28,6 +28,8 @@ def create_interaction(
 def list_interactions(
     customer_id: uuid.UUID | None = Query(default=None),
     type_filter: InteractionType | None = Query(default=None, alias="type"),
+    sentiment: Sentiment | None = Query(default=None),
+    search: str | None = Query(default=None, max_length=200),
     date_from: datetime | None = Query(default=None),
     date_to: datetime | None = Query(default=None),
     offset: int = Query(default=0, ge=0),
@@ -35,11 +37,13 @@ def list_interactions(
     current_user: User = Depends(get_current_user),
     service: InteractionService = Depends(get_interaction_service),
 ) -> PaginatedResponse[InteractionOut]:
-    """List interactions visible to the current user, with optional customer/type/date filters and pagination."""
+    """List interactions visible to the current user, with optional customer/type/sentiment/search/date filters and pagination."""
     items, total = service.list(
         current_user,
         customer_id=customer_id,
         type_=type_filter,
+        sentiment=sentiment,
+        search=search,
         date_from=date_from,
         date_to=date_to,
         offset=offset,

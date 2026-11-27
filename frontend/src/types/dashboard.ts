@@ -14,6 +14,13 @@ export interface NegativeSentimentAlert {
   summary: string | null;
 }
 
+export interface SentimentTrendPoint {
+  week: string;
+  positive: number;
+  neutral: number;
+  negative: number;
+}
+
 export interface Dashboard {
   total_customers: number;
   total_interactions: number;
@@ -22,4 +29,7 @@ export interface Dashboard {
   sentiment_breakdown: Record<string, number>;
   recent_interactions: RecentInteraction[];
   negative_sentiment_alerts: NegativeSentimentAlert[];
+  sentiment_trend: SentimentTrendPoint[];
+  customer_count_change_pct: number | null;
+  interaction_count_change_pct: number | null;
 }

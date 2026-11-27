@@ -1,5 +1,7 @@
 export type CustomerStatus = "active" | "churned" | "prospect";
 
+export type CustomerSort = "last_interaction" | "name" | "company";
+
 export interface Customer {
   id: string;
   name: string;
@@ -10,6 +12,7 @@ export interface Customer {
   owner_id: string;
   created_at: string;
   updated_at: string;
+  last_interaction_at: string | null;
 }
 
 export interface CustomerCreatePayload {
@@ -17,14 +20,13 @@ export interface CustomerCreatePayload {
   company?: string;
   email?: string;
   phone?: string;
-  status?: CustomerStatus;
 }
 
 export type CustomerUpdatePayload = Partial<CustomerCreatePayload>;
 
 export interface CustomerFilters {
-  status?: CustomerStatus;
   search?: string;
+  sort?: CustomerSort;
   offset?: number;
   limit?: number;
 }

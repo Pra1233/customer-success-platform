@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { SVGProps } from "react";
@@ -8,7 +8,6 @@ import type { SVGProps } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { InteractionList } from "@/components/interactions/InteractionList";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteCustomer, fetchCustomer } from "@/store/slices/customersSlice";
@@ -26,17 +25,10 @@ const NewInteractionModal = dynamic(
 function MailIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" fill="none" {...props}>
-      <path
-        d="M3 5h14v10H3V5Zm0 0 7 6 7-6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M3 5h14v10H3V5Zm0 0 7 6 7-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
-
 function PhoneIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" fill="none" {...props}>
@@ -50,7 +42,6 @@ function PhoneIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
 function BuildingIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 20 20" fill="none" {...props}>
@@ -76,16 +67,28 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3 py-3">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-surface-container text-secondary-text">
         <Icon className="h-4 w-4" />
       </div>
       <div>
-        <p className="text-xs text-gray-400">{label}</p>
-        <p className="text-sm font-medium text-gray-900">{value}</p>
+        <p className="font-body text-body-sm text-secondary-text">{label}</p>
+        <p className="font-label text-label-lg text-on-surface">{value}</p>
       </div>
     </div>
   );
 }
+
+const SENTIMENT_ORDER = ["positive", "neutral", "negative"] as const;
+const SENTIMENT_DOT: Record<string, string> = {
+  positive: "bg-success",
+  neutral: "bg-warning",
+  negative: "bg-danger",
+};
+const SENTIMENT_BAR: Record<string, string> = {
+  positive: "bg-success",
+  neutral: "bg-warning",
+  negative: "bg-danger",
+};
 
 export default function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -103,6 +106,18 @@ export default function CustomerDetailPage() {
     dispatch(fetchInteractions({ customer_id: id }));
   }, [dispatch, id]);
 
+  const sentimentBreakdown = useMemo(() => {
+    const counts: Record<string, number> = { positive: 0, neutral: 0, negative: 0 };
+    let total = 0;
+    for (const interaction of interactions) {
+      if (interaction.sentiment) {
+        counts[interaction.sentiment] = (counts[interaction.sentiment] ?? 0) + 1;
+        total += 1;
+      }
+    }
+    return { counts, total };
+  }, [interactions]);
+
   async function handleDelete() {
     if (!confirm("Delete this customer? This cannot be undone from the UI.")) return;
     const result = await dispatch(deleteCustomer(id));
@@ -112,27 +127,30 @@ export default function CustomerDetailPage() {
   }
 
   if (!customer) {
-    return <p className="text-sm text-gray-500">Loading...</p>;
+    return <p className="font-body text-body-md text-secondary-text">Loading...</p>;
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-6 rounded-md border border-outline-variant bg-surface p-6 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <Avatar name={customer.name} size="lg" />
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">{customer.name}</h1>
-            <div className="mt-1 flex items-center gap-2">
-              {customer.company && (
-                <span className="text-sm text-gray-500">{customer.company}</span>
-              )}
-              <Badge value={customer.status} />
-            </div>
+            <h1 className="font-headline text-headline-md text-on-surface">{customer.name}</h1>
+            {customer.company && (
+              <p className="font-body text-body-md text-secondary-text">{customer.company}</p>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => setIsEditOpen(true)}>
-            Edit
+            Edit customer
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setIsInteractionModalOpen(true)}
+          >
+            New interaction
           </Button>
           <Button variant="danger" size="sm" onClick={handleDelete}>
             Delete
@@ -140,35 +158,60 @@ export default function CustomerDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="h-fit lg:col-span-1">
-          <p className="mb-1 text-sm font-medium text-gray-700">Details</p>
-          <div className="divide-y divide-gray-100">
-            <DetailRow icon={BuildingIcon} label="Company" value={customer.company ?? "—"} />
-            <DetailRow icon={MailIcon} label="Email" value={customer.email ?? "—"} />
-            <DetailRow icon={PhoneIcon} label="Phone" value={customer.phone ?? "—"} />
-          </div>
-        </Card>
-
-        <div className="flex flex-col gap-4 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Interactions</h2>
-            <Button size="sm" onClick={() => setIsInteractionModalOpen(true)}>
-              Log interaction
-            </Button>
-          </div>
-          <Card>
-            <InteractionList interactions={interactions} />
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div className="flex flex-col gap-6 lg:col-span-4">
+          <Card className="flex flex-col gap-1">
+            <p className="mb-1 font-title text-title-md text-on-surface">Details</p>
+            <div className="divide-y divide-outline-variant">
+              <DetailRow icon={BuildingIcon} label="Company" value={customer.company ?? "—"} />
+              <DetailRow icon={MailIcon} label="Email" value={customer.email ?? "—"} />
+              <DetailRow icon={PhoneIcon} label="Phone" value={customer.phone ?? "—"} />
+            </div>
           </Card>
+
+          {sentimentBreakdown.total > 0 && (
+            <Card className="flex flex-col gap-4">
+              <p className="font-title text-title-md text-on-surface">Sentiment Overview</p>
+              <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-surface-container">
+                {SENTIMENT_ORDER.map((s) => (
+                  <div
+                    key={s}
+                    className={SENTIMENT_BAR[s]}
+                    style={{ width: `${(sentimentBreakdown.counts[s] / sentimentBreakdown.total) * 100}%` }}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-2">
+                {SENTIMENT_ORDER.map((s) => (
+                  <div key={s} className="flex items-center justify-between">
+                    <span className="flex items-center gap-2 font-label text-label-md capitalize text-on-surface">
+                      <span className={`h-2.5 w-2.5 rounded-full ${SENTIMENT_DOT[s]}`} />
+                      {s}
+                    </span>
+                    <span className="font-label text-label-md tabular-nums text-secondary-text">
+                      {sentimentBreakdown.counts[s]} (
+                      {Math.round((sentimentBreakdown.counts[s] / sentimentBreakdown.total) * 100)}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
+
+        <section className="flex flex-col gap-4 rounded-md border border-outline-variant bg-surface p-6 shadow-sm lg:col-span-8">
+          <div className="flex items-center justify-between">
+            <h2 className="font-title text-title-md text-on-surface">Interaction History</h2>
+            <span className="font-label text-label-md tabular-nums text-secondary-text">
+              {interactions.length} recorded interaction{interactions.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          <InteractionList interactions={interactions} />
+        </section>
       </div>
 
       {isEditOpen && (
-        <EditCustomerModal
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          customer={customer}
-        />
+        <EditCustomerModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} customer={customer} />
       )}
       {isInteractionModalOpen && (
         <NewInteractionModal

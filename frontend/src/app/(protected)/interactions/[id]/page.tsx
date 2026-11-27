@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 
 import { Card } from "@/components/ui/Card";
@@ -37,38 +38,55 @@ export default function InteractionDetailPage() {
   }, [dispatch, id]);
 
   if (!interaction) {
-    return <p className="text-sm text-gray-500">Loading...</p>;
+    return <p className="font-body text-body-md text-secondary-text">Loading...</p>;
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold text-gray-900">
-            {interaction.title ?? "Untitled interaction"}
-          </h1>
-          <Badge value={interaction.type} />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-headline text-headline-md text-on-surface">
+              {interaction.title ?? "Untitled interaction"}
+            </h1>
+            <Badge value={interaction.type} />
+          </div>
+          {interaction.customer_name && (
+            <Link
+              href={`/customers/${interaction.customer_id}`}
+              className="inline-flex items-center gap-1.5 font-label text-label-lg text-primary hover:text-primary-hover"
+            >
+              {interaction.customer_name}
+              {interaction.customer_company ? ` (${interaction.customer_company})` : ""}
+            </Link>
+          )}
         </div>
-        <Button variant="secondary" size="sm" onClick={() => setIsEditOpen(true)}>
+        <Button variant="secondary" size="sm" onClick={() => setIsEditOpen(true)} className="self-start sm:self-auto">
           Edit
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <p className="mb-2 text-xs text-gray-400">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <Card className="flex flex-col gap-4 lg:col-span-7">
+          <div className="flex items-center justify-between border-b border-outline-variant pb-4">
+            <h2 className="font-title text-title-md text-on-surface">Original Interaction Notes</h2>
+            <span className="font-label text-label-md text-secondary-text">Source record</span>
+          </div>
+          <p className="font-mono text-mono-sm text-secondary-text">
             {new Date(interaction.interaction_date).toLocaleString()}
           </p>
-          <p className="whitespace-pre-wrap text-sm text-gray-700">{interaction.notes}</p>
+          <p className="whitespace-pre-wrap font-body text-body-lg leading-relaxed text-on-surface">
+            {interaction.notes}
+          </p>
         </Card>
 
-        <Card className="h-fit lg:col-span-2">
+        <div className="lg:col-span-5">
           <InsightPanel
             insights={insights}
             isGenerating={insightsStatus === "loading"}
             onGenerate={handleGenerate}
           />
-        </Card>
+        </div>
       </div>
 
       {isEditOpen && (

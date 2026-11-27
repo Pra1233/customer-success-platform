@@ -10,21 +10,21 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label htmlFor={id} className="text-sm font-medium text-gray-700">
+          <label htmlFor={id} className="font-label text-label-md text-on-surface">
             {label}
-            {required && <span className="ml-0.5 text-red-500">*</span>}
+            {required && <span className="ml-0.5 text-danger">*</span>}
           </label>
         )}
         <textarea
           ref={ref}
           id={id}
           required={required}
-          className={`rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 ${
-            error ? "border-red-400" : "border-gray-300"
+          className={`rounded border bg-surface px-3 py-2 font-body text-body-md text-on-surface placeholder:text-muted-text outline-none transition-colors duration-150 ease-out focus:border-primary focus:ring-2 focus:ring-primary-container ${
+            error ? "border-danger" : "border-outline-variant"
           } ${className}`}
           {...rest}
         />
-        {error && <span className="text-xs text-red-600">{error}</span>}
+        {error && <span className="font-body text-body-sm text-danger">{error}</span>}
       </div>
     );
   }

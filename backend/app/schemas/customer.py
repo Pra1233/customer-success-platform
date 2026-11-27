@@ -34,3 +34,4 @@ class CustomerOut(BaseModel):
     owner_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    last_interaction_at: datetime | None = None

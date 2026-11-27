@@ -37,6 +37,9 @@ class DashboardService:
             "sentiment_breakdown": self._repo.sentiment_breakdown(owner_id),
             "recent_interactions": self._repo.recent_interactions(owner_id),
             "negative_sentiment_alerts": self._repo.negative_sentiment_alerts(owner_id),
+            "sentiment_trend": self._repo.weekly_sentiment_trend(owner_id),
+            "customer_count_change_pct": self._repo.customer_count_change_pct(owner_id),
+            "interaction_count_change_pct": self._repo.interaction_count_change_pct(owner_id),
         }
 
         self._cache.set_json(cache_key, payload, ttl_seconds=settings.dashboard_cache_ttl_seconds)

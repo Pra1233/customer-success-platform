@@ -26,7 +26,7 @@ interface AvatarProps {
 export const Avatar = memo(function Avatar({ name, size = "md" }: AvatarProps) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-700 ${sizeClasses[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-primary-container font-label font-semibold text-on-primary-container ${sizeClasses[size]}`}
     >
       {getInitials(name)}
     </div>

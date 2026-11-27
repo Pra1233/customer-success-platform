@@ -1,3 +1,5 @@
+import type { Sentiment } from "@/types/insight";
+
 export type InteractionType = "call" | "email" | "meeting";
 
 export interface Interaction {
@@ -10,6 +12,9 @@ export interface Interaction {
   interaction_date: string;
   created_at: string;
   updated_at: string;
+  customer_name: string | null;
+  customer_company: string | null;
+  sentiment: Sentiment | null;
 }
 
 export interface InteractionCreatePayload {
@@ -27,6 +32,8 @@ export type InteractionUpdatePayload = Partial<
 export interface InteractionFilters {
   customer_id?: string;
   type?: InteractionType;
+  sentiment?: Sentiment;
+  search?: string;
   date_from?: string;
   date_to?: string;
   offset?: number;

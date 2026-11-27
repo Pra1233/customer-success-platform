@@ -13,18 +13,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-md active:bg-brand-800 disabled:bg-brand-300 disabled:shadow-none",
+    "bg-primary text-on-primary hover:bg-primary-hover disabled:bg-primary/40 focus-visible:ring-primary",
   secondary:
-    "bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 disabled:text-gray-400",
+    "bg-surface text-on-surface border border-outline-variant hover:bg-surface-container disabled:text-muted-text focus-visible:ring-primary",
   danger:
-    "bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md active:bg-red-800 disabled:bg-red-300 disabled:shadow-none",
-  ghost: "bg-transparent text-gray-600 hover:bg-gray-100 active:bg-gray-200",
+    "bg-danger text-on-danger hover:opacity-90 disabled:opacity-40 focus-visible:ring-danger",
+  ghost:
+    "bg-transparent text-secondary-text hover:bg-surface-container hover:text-on-surface focus-visible:ring-primary",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "h-8 px-3 text-xs gap-1.5",
-  md: "h-10 px-4 text-sm gap-2",
-  lg: "h-12 px-6 text-base gap-2",
+  sm: "h-8 px-3 text-label-md gap-1.5",
+  md: "h-10 px-4 text-label-lg gap-2",
+  lg: "h-12 px-6 text-label-lg gap-2",
 };
 
 export function Button({
@@ -38,7 +39,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-lg font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed active:scale-[0.98] ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded font-label font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       disabled={disabled || isLoading}
       {...rest}
     >

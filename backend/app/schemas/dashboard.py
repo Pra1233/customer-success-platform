@@ -17,6 +17,13 @@ class NegativeSentimentAlert(BaseModel):
     summary: str | None
 
 
+class SentimentTrendPoint(BaseModel):
+    week: str
+    positive: int = 0
+    neutral: int = 0
+    negative: int = 0
+
+
 class DashboardOut(BaseModel):
     total_customers: int
     total_interactions: int
@@ -25,3 +32,6 @@ class DashboardOut(BaseModel):
     sentiment_breakdown: dict[str, int]
     recent_interactions: list[RecentInteraction]
     negative_sentiment_alerts: list[NegativeSentimentAlert]
+    sentiment_trend: list[SentimentTrendPoint]
+    customer_count_change_pct: float | None = None
+    interaction_count_change_pct: float | None = None

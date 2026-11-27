@@ -33,9 +33,9 @@ export function Logo({ variant = "full", className = "" }: LogoProps) {
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
       {mark}
-      <span className="text-[15px] font-semibold leading-tight text-gray-900">
+      <span className="font-title text-title-md leading-tight text-on-surface">
         Customer Success
-        <span className="block text-[11px] font-medium text-gray-400">Platform</span>
+        <span className="block font-label text-label-md leading-tight text-secondary-text">Platform</span>
       </span>
     </div>
   );

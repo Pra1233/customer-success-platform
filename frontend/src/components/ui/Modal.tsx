@@ -33,15 +33,15 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       <div
         role="dialog"
         aria-modal="true"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-md bg-surface p-6 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <h2 className="font-title text-title-lg text-on-surface">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="cursor-pointer rounded p-1 text-secondary-text transition-colors hover:bg-surface-container hover:text-on-surface"
           >
             <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
               <path

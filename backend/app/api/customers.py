@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status
 
 from app.api.deps import get_current_user, get_customer_service
-from app.core.enums import CustomerStatus
+from app.core.enums import CustomerSortField, CustomerStatus
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.customer import CustomerCreate, CustomerOut, CustomerUpdate
@@ -27,14 +27,15 @@ def create_customer(
 def list_customers(
     status_filter: CustomerStatus | None = Query(default=None, alias="status"),
     search: str | None = Query(default=None, max_length=200),
+    sort: CustomerSortField | None = Query(default=None),
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=50, ge=1, le=200),
     current_user: User = Depends(get_current_user),
     service: CustomerService = Depends(get_customer_service),
 ) -> PaginatedResponse[CustomerOut]:
-    """List customers visible to the current user, with optional status/search filters and pagination."""
+    """List customers visible to the current user, with optional status/search filters, sorting, and pagination."""
     items, total = service.list(
-        current_user, status=status_filter, search=search, offset=offset, limit=limit
+        current_user, status=status_filter, search=search, sort=sort, offset=offset, limit=limit
     )
     return PaginatedResponse(
         items=[CustomerOut.model_validate(c) for c in items],
