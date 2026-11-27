@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
+import { useToast } from "@/components/ui/ToastProvider";
 import { InsightPanel } from "@/components/interactions/InsightPanel";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchInteraction } from "@/store/slices/interactionsSlice";
@@ -22,6 +23,7 @@ const EditInteractionModal = dynamic(
 export default function InteractionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const interaction = useAppSelector((state) => state.interactions.current);
   const insights = useAppSelector((state) => state.insights.byInteractionId[id] ?? []);
@@ -34,9 +36,12 @@ export default function InteractionDetailPage() {
     dispatch(fetchInsights(id));
   }, [dispatch, id]);
 
-  const handleGenerate = useCallback(() => {
-    dispatch(generateInsight(id));
-  }, [dispatch, id]);
+  const handleGenerate = useCallback(async () => {
+    const result = await dispatch(generateInsight(id));
+    if (!generateInsight.fulfilled.match(result)) {
+      showToast((result.payload as string) ?? "Failed to generate insight.", "error");
+    }
+  }, [dispatch, id, showToast]);
 
   if (!interaction) {
     return <p className="font-body text-body-md text-secondary-text">Loading...</p>;

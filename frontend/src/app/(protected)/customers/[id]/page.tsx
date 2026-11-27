@@ -9,6 +9,8 @@ import { Avatar } from "@/components/ui/Avatar";
 import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useToast } from "@/components/ui/ToastProvider";
 import { InteractionList } from "@/components/interactions/InteractionList";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteCustomer, fetchCustomer } from "@/store/slices/customersSlice";
@@ -95,12 +97,15 @@ export default function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const customer = useAppSelector((state) => state.customers.current);
   const interactions = useAppSelector((state) => state.interactions.items);
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isInteractionModalOpen, setIsInteractionModalOpen] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCustomer(id));
@@ -119,11 +124,16 @@ export default function CustomerDetailPage() {
     return { counts, total };
   }, [interactions]);
 
-  async function handleDelete() {
-    if (!confirm("Delete this customer? This cannot be undone from the UI.")) return;
+  async function handleDeleteConfirmed() {
+    setIsDeleting(true);
     const result = await dispatch(deleteCustomer(id));
+    setIsDeleting(false);
+    setIsConfirmDeleteOpen(false);
     if (deleteCustomer.fulfilled.match(result)) {
+      showToast("Customer deleted successfully.", "success");
       router.push("/customers");
+    } else {
+      showToast((result.payload as string) ?? "Failed to delete customer.", "error");
     }
   }
 
@@ -154,7 +164,7 @@ export default function CustomerDetailPage() {
           >
             New interaction
           </Button>
-          <Button variant="danger" size="sm" onClick={handleDelete}>
+          <Button variant="danger" size="sm" onClick={() => setIsConfirmDeleteOpen(true)}>
             Delete
           </Button>
         </div>
@@ -222,6 +232,15 @@ export default function CustomerDetailPage() {
           fixedCustomerId={customer.id}
         />
       )}
+      <ConfirmDialog
+        isOpen={isConfirmDeleteOpen}
+        title="Delete customer"
+        message={`Delete ${customer.name}? This cannot be undone.`}
+        confirmLabel="Delete"
+        isConfirming={isDeleting}
+        onConfirm={handleDeleteConfirmed}
+        onClose={() => setIsConfirmDeleteOpen(false)}
+      />
     </div>
   );
 }

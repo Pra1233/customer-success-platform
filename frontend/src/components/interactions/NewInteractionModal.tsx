@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
+import { useToast } from "@/components/ui/ToastProvider";
 import { InteractionForm } from "@/components/interactions/InteractionForm";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createInteraction } from "@/store/slices/interactionsSlice";
@@ -26,6 +27,7 @@ export function NewInteractionModal({
   const dispatch = useAppDispatch();
   const status = useAppSelector((state) => state.interactions.status);
   const customers = useAppSelector((state) => state.customers.items);
+  const { showToast } = useToast();
 
   const [selectedCustomerId, setSelectedCustomerId] = useState(fixedCustomerId ?? "");
 
@@ -38,8 +40,11 @@ export function NewInteractionModal({
   async function handleSubmit(payload: InteractionCreatePayload) {
     const result = await dispatch(createInteraction(payload));
     if (createInteraction.fulfilled.match(result)) {
+      showToast("Interaction logged successfully.", "success");
       onCreated?.();
       onClose();
+    } else {
+      showToast((result.payload as string) ?? "Failed to log interaction.", "error");
     }
   }
 

@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { customerService } from "@/services/customerService";
+import { extractErrorMessage } from "@/lib/errors";
 import type {
   Customer,
   CustomerCreatePayload,
@@ -37,22 +38,43 @@ export const fetchCustomer = createAsyncThunk(
 
 export const createCustomer = createAsyncThunk(
   "customers/create",
-  async (payload: CustomerCreatePayload) => customerService.create(payload)
+  async (payload: CustomerCreatePayload, { rejectWithValue }) => {
+    try {
+      return await customerService.create(payload);
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to create customer"));
+    }
+  }
 );
 
 export const updateCustomer = createAsyncThunk(
   "customers/update",
-  async ({ id, payload }: { id: string; payload: CustomerUpdatePayload }) =>
-    customerService.update(id, payload)
+  async (
+    { id, payload }: { id: string; payload: CustomerUpdatePayload },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await customerService.update(id, payload);
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to update customer"));
+    }
+  }
 );
 
 export const deleteCustomer = createAsyncThunk(
   "customers/delete",
-  async (id: string) => {
-    await customerService.remove(id);
-    return id;
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await customerService.remove(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to delete customer"));
+    }
   }
 );
+
+const getRejectValueMessage = (action: { payload?: unknown }) =>
+  action.payload as string | undefined;
 
 const customersSlice = createSlice({
   name: "customers",
@@ -61,9 +83,9 @@ const customersSlice = createSlice({
   extraReducers: (builder) => {
     addAsyncStatusCases(builder, fetchCustomers, "Failed to load customers");
     addAsyncStatusCases(builder, fetchCustomer, "Failed to load customer");
-    addAsyncStatusCases(builder, createCustomer, "Failed to create customer");
-    addAsyncStatusCases(builder, updateCustomer, "Failed to update customer");
-    addAsyncStatusCases(builder, deleteCustomer, "Failed to delete customer");
+    addAsyncStatusCases(builder, createCustomer, "Failed to create customer", getRejectValueMessage);
+    addAsyncStatusCases(builder, updateCustomer, "Failed to update customer", getRejectValueMessage);
+    addAsyncStatusCases(builder, deleteCustomer, "Failed to delete customer", getRejectValueMessage);
 
     builder
       .addCase(fetchCustomers.fulfilled, (state, action) => {

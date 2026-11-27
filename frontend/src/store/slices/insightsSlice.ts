@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { insightService } from "@/services/insightService";
+import { extractErrorMessage } from "@/lib/errors";
 import type { Insight } from "@/types/insight";
 
 interface InsightsState {
@@ -18,10 +19,13 @@ const initialState: InsightsState = {
 
 export const generateInsight = createAsyncThunk(
   "insights/generate",
-  async (interactionId: string) => ({
-    interactionId,
-    insight: await insightService.generate(interactionId),
-  })
+  async (interactionId: string, { rejectWithValue }) => {
+    try {
+      return { interactionId, insight: await insightService.generate(interactionId) };
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to generate insight"));
+    }
+  }
 );
 
 export const fetchInsights = createAsyncThunk(
@@ -37,7 +41,12 @@ const insightsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    addAsyncStatusCases(builder, generateInsight, "Failed to generate insight");
+    addAsyncStatusCases(
+      builder,
+      generateInsight,
+      "Failed to generate insight",
+      (action) => action.payload as string | undefined
+    );
     addAsyncStatusCases(builder, fetchInsights, "Failed to load insights");
 
     builder

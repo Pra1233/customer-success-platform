@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { interactionService } from "@/services/interactionService";
+import { extractErrorMessage } from "@/lib/errors";
 import type {
   Interaction,
   InteractionCreatePayload,
@@ -37,14 +38,31 @@ export const fetchInteraction = createAsyncThunk(
 
 export const createInteraction = createAsyncThunk(
   "interactions/create",
-  async (payload: InteractionCreatePayload) => interactionService.create(payload)
+  async (payload: InteractionCreatePayload, { rejectWithValue }) => {
+    try {
+      return await interactionService.create(payload);
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to create interaction"));
+    }
+  }
 );
 
 export const updateInteraction = createAsyncThunk(
   "interactions/update",
-  async ({ id, payload }: { id: string; payload: InteractionUpdatePayload }) =>
-    interactionService.update(id, payload)
+  async (
+    { id, payload }: { id: string; payload: InteractionUpdatePayload },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await interactionService.update(id, payload);
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, "Failed to update interaction"));
+    }
+  }
 );
+
+const getRejectValueMessage = (action: { payload?: unknown }) =>
+  action.payload as string | undefined;
 
 const interactionsSlice = createSlice({
   name: "interactions",
@@ -53,8 +71,8 @@ const interactionsSlice = createSlice({
   extraReducers: (builder) => {
     addAsyncStatusCases(builder, fetchInteractions, "Failed to load interactions");
     addAsyncStatusCases(builder, fetchInteraction, "Failed to load interaction");
-    addAsyncStatusCases(builder, createInteraction, "Failed to create interaction");
-    addAsyncStatusCases(builder, updateInteraction, "Failed to update interaction");
+    addAsyncStatusCases(builder, createInteraction, "Failed to create interaction", getRejectValueMessage);
+    addAsyncStatusCases(builder, updateInteraction, "Failed to update interaction", getRejectValueMessage);
 
     builder
       .addCase(fetchInteractions.fulfilled, (state, action) => {

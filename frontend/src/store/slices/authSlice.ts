@@ -3,9 +3,8 @@ import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/tool
 import { ACCESS_TOKEN_KEY, AUTH_USER_KEY } from "@/lib/constants";
 import { addAsyncStatusCases } from "@/store/asyncStatus";
 import { authService } from "@/services/authService";
+import { extractErrorMessage } from "@/lib/errors";
 import type { LoginPayload, RegisterPayload, User } from "@/types/user";
-import type { ApiErrorBody } from "@/types/common";
-import { isAxiosError } from "axios";
 
 interface AuthState {
   user: User | null;
@@ -18,13 +17,6 @@ const initialState: AuthState = {
   status: "idle",
   error: null,
 };
-
-function extractErrorMessage(error: unknown): string {
-  if (isAxiosError<ApiErrorBody>(error) && error.response?.data?.error) {
-    return error.response.data.error.message;
-  }
-  return "Something went wrong. Please try again.";
-}
 
 function persistSession(token: string, user: User) {
   window.localStorage.setItem(ACCESS_TOKEN_KEY, token);
